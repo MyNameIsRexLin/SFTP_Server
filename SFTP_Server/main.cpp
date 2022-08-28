@@ -74,8 +74,8 @@ static DWORD WINAPI Thread_sftp_server(LPVOID lpParam);
 string g_user_name = "rexlin";
 string g_password = "12345678";
 wstring g_rootpath = L"";// L"D:/123";
-string g_rsakey = "rsa-pv.txt";// "ssh_host_rsa_key";
-string g_rsapubkey = "rsa-pu.txt";// "ssh_host_rsa_key.pub";
+string g_rsakey =  "ssh_host_rsa_key";
+string g_rsapubkey = "ssh_host_rsa_key.pub";
 CRITICAL_SECTION cs;
 HANDLE hMutex;
 static struct handle_table_entry s_handle_table[MAX_HANDLES];
@@ -173,8 +173,6 @@ int start()
 			break;
 		}
 
-		//if(ssh_bind_options_set(_sshbind, SSH_BIND_OPTIONS_BINDADDR, "10.1.3.60") < 0)
-		//	break;
 		if(ssh_bind_options_set(_sshbind, SSH_BIND_OPTIONS_BINDPORT_STR, "22") < 0)
 			break;
 		//ssh_bind_options_set(_sshbind, SSH_BIND_OPTIONS_HOSTKEY, "dsap.txt");
@@ -239,36 +237,6 @@ bool mainLoop(ssh_bind sshbind)
 			//LOG(XM_ERR) << "error accepting a connection : " << ssh_get_error(sshbind);
 			printf("error accepting a connection : %s\n", ssh_get_error(sshbind));
 		}
-		//Thread start
-		//unsigned nTrd = 0;
-		//HANDLE hTrd = (HANDLE)_beginthreadex(NULL, 0,
-		//	Thread_sftp_server, session, 0, &nTrd);//Rex
-	  //if(ssh_handle_key_exchange(session)) {
-	  //  LOG(XM_ERR) << "ssh_handle_key_exchange: " << ssh_get_error(session);
-	  //}
-
-	  //if(authenticate(session, server_user, server_password) == SUCCESS &&
-	  //   openChannel(session, chan) == SUCCESS &&
-	  //   sftpChannelRequest(session) == SUCCESS){
-	  //  LOG(XM_DEBUG) << "ssh authenticate and initialize done";
-	  //  LOG(XM_DEBUG) << "begin to transfer file";
-
-	  //  sftp_ss = sftp_server_new(session, chan);
-
-	  //  //unsigned nTrd = 0;
-
-	  //  //HANDLE hTrd = (HANDLE)_beginthreadex(NULL, 0,
-	  //  //    Thread_sftp_server, (void *)&sftp_ss, 0, &nTrd);//Rex
-	  //  sftp_server_init(sftp_ss);
-	  //  SftpInternal::sftpMessageLoop(sftp_ss);
-	  //  
-	  //  //ssh_channel_free(chan);
-	  //  //ssh_channel_close(chan);
-	  //  // sftp_free will free channel and close channel and free all handles
-	  //  
-	  //  sftp_free(sftp_ss);
-	  //}
-		//ssh_disconnect(session);
 	}
 	return ret;
 }
@@ -390,12 +358,11 @@ char* readdir_long_name(char* z_file_name, struct stat* z_st, char* z_long_name)
 	}
 	snprintf(tmpbuf, sizeof(tmpbuf), " %s %s", time + 4, z_file_name);
 	strcat_s(z_long_name,256, tmpbuf);
-	//printf("%s\n", z_long_name);
+	
 	return z_long_name;
 }
 static void init_handle_table(void)
 {
-	//sem_init(&s_handle_table_mutex, 0, 1);
 	hMutex = CreateMutex(NULL, false, L"Mysftp");
 
 	for (int i = 0; i < MAX_HANDLES; i++)
@@ -413,7 +380,6 @@ static int add_handle(int z_type, void* z_handle, const char* z_path, void* z_se
 
 	if (z_handle != NULL)
 	{
-		//sem_wait(&s_handle_table_mutex);
 		WaitForSingleObject(hMutex, INFINITE);
 
 		for (int i = 0; i < MAX_HANDLES; i++)
@@ -432,7 +398,6 @@ static int add_handle(int z_type, void* z_handle, const char* z_path, void* z_se
 		}
 
 		ReleaseMutex(hMutex);
-		//sem_post(&s_handle_table_mutex);
 	}
 
 	return(ret);
@@ -443,7 +408,6 @@ static char* get_handle_path(void* z_handle)
 
 	if (z_handle != NULL)
 	{
-		//sem_wait(&s_handle_table_mutex);
 		WaitForSingleObject(hMutex, INFINITE);
 
 		for (int i = 0; i < MAX_HANDLES; i++)
@@ -455,7 +419,6 @@ static char* get_handle_path(void* z_handle)
 			}
 		}
 
-		//sem_post(&s_handle_table_mutex);
 		ReleaseMutex(hMutex);
 	}
 
@@ -467,7 +430,6 @@ static int close_handle(void* z_handle)
 
 	if (z_handle != NULL)
 	{
-		//sem_wait(&s_handle_table_mutex);
 		WaitForSingleObject(hMutex, INFINITE);
 
 		for (int i = 0; i < MAX_HANDLES; i++)
@@ -503,7 +465,6 @@ static int close_handle(void* z_handle)
 			}
 		}
 
-		//sem_post(&s_handle_table_mutex);
 		ReleaseMutex(hMutex);
 	}
 
@@ -591,23 +552,7 @@ static int check_publickey(const char* z_user,ssh_key z_public/*, ssh_publickey_
 
 	//ssh_key key = NULL;
 	int result;
-	//result = ssh_pki_import_pubkey_file(g_rsapubkey.c_str(), &key);
-	//if ((result != SSH_OK) || (key == NULL)) 
-	//{
-	//	fprintf(stderr,
-	//		"Unable to import public key file %s\n",
-	//		g_rsapubkey.c_str());
-	//}
-	//else 
-	//{
-	//	result = ssh_key_cmp(key, z_public, SSH_KEY_CMP_PUBLIC);
-	//	ssh_key_free(key);
-	//	if (result == 0) 
-	//	{
-	//		//printf("B\n");
-	//		return SSH_OK;
-	//	}
-	//}
+
 	ssh_key privkey;
 	ssh_key publickey;
 	result = ssh_pki_import_privkey_file(g_rsakey.c_str(),
@@ -1082,8 +1027,7 @@ static int process_readdir(sftp_client_message z_client_message)
 
 		ret = SSH_OK;
 		strcpy_s(long_path, get_handle_path((void*)dir));
-		//MessageBoxA(0, long_path, 0, 0);
-		//strcat_s(long_path, "/");
+
 		path_length = (int)strlen(long_path);
 
 		for (int i = 0; i < NUM_ENTRIES_PER_PACKET; i++)
@@ -1097,9 +1041,9 @@ static int process_readdir(sftp_client_message z_client_message)
 				char long_name[_MAX_FNAME];
 
 				strcpy_s(&long_path[path_length], _MAX_FNAME, dentry->d_name);
-				//MessageBoxA(0, long_path, 0, 0);
+
 				wstring wlong_path = stringToWstring(long_path,CP_UTF8);
-				//MessageBox(0, wlong_path.c_str(), 0, 0);
+
 				string clong_path = WstringTostring(wlong_path, CP_ACP);
 				if (stat(clong_path.c_str(), &st) == 0)
 				{
@@ -1181,7 +1125,7 @@ static int process_open(sftp_client_message z_client_message)
 	int ret = SSH_ERROR;
 	const char* file_name = sftp_client_message_get_filename(z_client_message);
 	wstring wfile_name = stringToWstring(file_name, CP_UTF8);
-	//MessageBox(0, wfile_name.c_str(),0,0);
+
 	uint32_t message_flags = z_client_message->flags;
 	FILE* fp = NULL;
 	wchar_t mode[4];
@@ -1214,8 +1158,6 @@ static int process_open(sftp_client_message z_client_message)
 		wcscpy_s(mode, L"wb");
 	}
 
-	//fp = fopen(file_name, mode);
-	//MessageBox(0, mode,0,0);
 	wstring m_pathname = g_rootpath;
 	m_pathname += wfile_name;
 	_wfopen_s(&fp, m_pathname.c_str(), mode);
@@ -1224,8 +1166,6 @@ static int process_open(sftp_client_message z_client_message)
 	{
 		if (add_handle(FILE_HANDLE, fp, file_name, z_client_message->sftp) == SSH_OK)
 		{
-			//MessageBox(0,L"Open", 0, 0);
-			//m_nBytesSend = 0;
 			ssh_string handle = sftp_handle_alloc(z_client_message->sftp, fp);
 			sftp_reply_handle(z_client_message, handle);
 			ssh_string_free(handle);
@@ -1251,11 +1191,9 @@ static int process_read(sftp_client_message z_client_message,ULONGLONG& pSend, t
 
 	if (fp != NULL)
 	{
-		//printf("%I64u\n", z_client_message->offset);
 		if (m_Bandwidth > 0 && pSend <= 0)
 		{
 			pSend = m_Bandwidth;
-			//BandwidthStart = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 		}
 		if (pStart <= 0)
 			pStart = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
@@ -1267,7 +1205,7 @@ static int process_read(sftp_client_message z_client_message,ULONGLONG& pSend, t
 			ret = SSH_OK;
 
 			n = (uint32_t)fread(buffer, sizeof(char), z_client_message->len, fp);
-			//printf("%u %u\n", z_client_message->len, n);
+
 			if (n > 0)
 			{
 				sftp_reply_data(z_client_message, buffer, n);
@@ -1277,29 +1215,22 @@ static int process_read(sftp_client_message z_client_message,ULONGLONG& pSend, t
 					pSend -= n;
 				if (m_Bandwidth > 0 && pSend <= 0)
 				{
-					//printf("%I64u %I64u\n", pSend, m_Bandwidth);
 					time_t BandwidthEnd = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 					time_t BandwidthValue = BandwidthEnd - pStart;
-					//printf("%I64d %I64d %I64d\n", pStart, BandwidthEnd, BandwidthValue);
+
 					if (BandwidthValue > 1000)
 					{
-						//printf("A\n");
 						pSend = m_Bandwidth;
-						//BandwidthStart = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 					}
 					else
 					{
 
 						time_t BandwidthValue1 = 1000 - BandwidthValue;
-						//printf("Sleep %I64d %I64d\n", BandwidthValue, BandwidthValue1);
 						Sleep(BandwidthValue1);
 						pSend = m_Bandwidth;
-						//BandwidthStart = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 					}
 					pStart = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 				}
-				//else
-				//	printf("%I64u\n", pSend);
 			}
 			else
 			{
@@ -1328,7 +1259,6 @@ static int process_write(sftp_client_message z_client_message)
 	if (fp != NULL)
 	{
 		size_t n;
-		//unsigned long len = (unsigned long)strlen(ssh_string_get_char(z_client_message->data));
 		size_t len = ssh_string_len(z_client_message->data);
 		printf("%I64u %I64u\n",len, z_client_message->offset);
 		_fseeki64(fp, z_client_message->offset, SEEK_SET);
@@ -1382,28 +1312,15 @@ static int process_lstat(sftp_client_message z_client_message)
 	wstring m_pathname = g_rootpath;
 	m_pathname += stringToWstring(file_name,CP_UTF8);
 	string cpathname = WstringTostring(m_pathname, CP_ACP);
-	//if (_waccess(m_pathname.c_str(), 00))
-	//{
-	//	FILE* fp;
-	//	_wfopen_s(&fp, m_pathname.c_str(), L"wb+");
-	//	if (fp)
-	//	{
-	//		fclose(fp);
-	//	}
-	//}
-	//MessageBox(0, m_pathname.c_str(),0,0);
+
 	if (stat(cpathname.c_str(), &st) == 0)
 	{
-		//MessageBoxA(0, "A", 0, 0);
 		stat_to_filexfer_attrib(&st, &attr);
 		sftp_reply_attr(z_client_message, &attr);
 	}
 	else
 	{
-		//MessageBoxA(0, "B", 0, 0);
-		//int status = errno_to_ssh_status(errno);
 		sftp_reply_status(z_client_message, 0, NULL);
-		//ret = SSH_ERROR;
 	}
 
 	return(ret);
@@ -1433,7 +1350,6 @@ static int process_setstat(sftp_client_message z_client_message)
 			//status = errno_to_ssh_status(errno);
 		}
 	}
-	//MessageBoxA(0, file_name,0,0);
 	wstring m_pathname = g_rootpath;
 	m_pathname += stringToWstring(file_name, CP_UTF8);
 	if (z_client_message->attr->flags & (uint32_t)SSH_FILEXFER_ATTR_PERMISSIONS)
@@ -1447,16 +1363,6 @@ static int process_setstat(sftp_client_message z_client_message)
 
 	if (z_client_message->attr->flags & (uint32_t)SSH_FILEXFER_ATTR_ACMODTIME)
 	{
-		//struct utimbuf times;
-
-		//times.actime = z_client_message->attr->atime;
-		//times.modtime = z_client_message->attr->mtime;
-
-		//if (utime(file_name, &times) == -1)
-		//{
-		//	ret = SSH_ERROR;
-		//	status = errno_to_ssh_status(errno);
-		//}
 		HANDLE hFile = CreateFile(m_pathname.c_str(),
 			GENERIC_WRITE,  
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
@@ -1472,27 +1378,13 @@ static int process_setstat(sftp_client_message z_client_message)
 			SystemTimeToFileTime(&actime, &aft);
 			SystemTimeToFileTime(&modtime, &mft);
 			SetFileTime(hFile, NULL, &aft, &mft);
-			//if (!SetFileTime(hFile,NULL, &aft, &mft))
-			//{
-			//	ret = SSH_ERROR;
-			//	status = errno_to_ssh_status(errno);
-			//}
 			CloseHandle(hFile);
 		}
-		//else
-		//{
-			//ret = SSH_ERROR;
-			//status = errno_to_ssh_status(errno);
-		//}
 	}
 
 	if (z_client_message->attr->flags & (uint32_t)SSH_FILEXFER_ATTR_UIDGID)
 	{
-		//if (chown(file_name, z_client_message->attr->uid, z_client_message->attr->gid) == -1)
-		//{
-		//	ret = SSH_ERROR;
-		//	status = errno_to_ssh_status(errno);
-		//}
+
 	}
 
 	sftp_reply_status(z_client_message, status, NULL);
@@ -1509,12 +1401,8 @@ static int process_remove(sftp_client_message z_client_message)
 	//DeleteFile(m_pathname.c_str());
 	if (_wunlink(m_pathname.c_str()) < 0)
 	{
-		//printf("B\n");
-		//ret = SSH_ERROR;
 		status = errno_to_ssh_status(errno);
 	}
-	//else
-	//	printf("A\n");
 	sftp_reply_status(z_client_message, status, NULL);
 
 	return(ret);
@@ -1562,13 +1450,10 @@ static int process_mkdir(sftp_client_message z_client_message)
 	int ret = SSH_OK;
 	int status = SSH_FX_OK;
 	const char* dir_name = sftp_client_message_get_filename(z_client_message);
-	//uint32_t message_flags = z_client_message->flags;
-	//uint32_t permission = z_client_message->attr->permissions;
-	//uint32_t mode = (message_flags & (uint32_t)SSH_FILEXFER_ATTR_PERMISSIONS) ? permission & (uint32_t)07777 : 0777;
+
 	wstring m_dirpathname = g_rootpath;
 	m_dirpathname += stringToWstring(dir_name, CP_UTF8);
-	//MessageBox(0, m_dirpathname.c_str(),0,0);
-	//if(!CreateDirectory(m_dirpathname.c_str(), NULL))
+
 	if (_wmkdir(m_dirpathname.c_str()) < 0)
 	{
 		//MessageBox(0, m_dirpathname.c_str(),0,0);
