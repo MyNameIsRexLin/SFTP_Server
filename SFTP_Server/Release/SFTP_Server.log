@@ -1,0 +1,20 @@
+﻿  dirent.cpp
+  GlobalFunction.cpp
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\GlobalFunction.cpp(42,28): warning C4838: 從 'int' 到 'WORD' 的轉換必須是縮小轉換
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\GlobalFunction.cpp(42,46): warning C4838: 從 'int' 到 'WORD' 的轉換必須是縮小轉換
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\GlobalFunction.cpp(42,66): warning C4838: 從 'int' 到 'WORD' 的轉換必須是縮小轉換
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\GlobalFunction.cpp(43,27): warning C4838: 從 'int' 到 'WORD' 的轉換必須是縮小轉換
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\GlobalFunction.cpp(43,41): warning C4838: 從 'int' 到 'WORD' 的轉換必須是縮小轉換
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\GlobalFunction.cpp(43,55): warning C4838: 從 'int' 到 'WORD' 的轉換必須是縮小轉換
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\GlobalFunction.cpp(43,68): warning C4838: 從 'int' 到 'WORD' 的轉換必須是縮小轉換
+  main.cpp
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\main.cpp(83,23): warning C4244: '正在初始化': 將 'double' 轉換為 'ULONGLONG'，由於類型不同，可能導致資料遺失
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\main.cpp(122,36): warning C4244: '=': 將 'double' 轉換為 'ULONGLONG'，由於類型不同，可能導致資料遺失
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\main.cpp(1295,13): warning C4244: '引數': 將 'time_t' 轉換為 'DWORD'，由於類型不同，可能導致資料遺失
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\main.cpp(1333,10): warning C4477: 'printf' : 格式字串 '%I64u' 需要 'unsigned __int64' 類型的引數，但 variadic 引數 1 的類型為 'size_t'
+C:\Users\azx96\source\repos\SFTP_Server\SFTP_Server\main.cpp(1333,10): message : 請考慮在格式字串中使用 '%zu'
+  正在產生程式碼
+  Previous IPDB not found, fall back to full compilation.
+  All 234 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成程式碼產生
+  SFTP_Server.vcxproj -> C:\Users\azx96\source\repos\SFTP_Server\Release\SFTP_Server.exe
